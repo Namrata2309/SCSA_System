@@ -55,10 +55,14 @@ _ASSESSMENT_JSON_SCHEMA = {
 }
 
 
-def _create_client(api_key: str, timeout: float) -> Any:
+def _create_client(api_key: str, timeout: float | None) -> Any:
     from google import genai
-    from google.genai import types
 
+    # Use the SDK's default deadline unless a caller explicitly overrides it.
+    if timeout is None:
+        return genai.Client(api_key=api_key)
+
+    from google.genai import types
     return genai.Client(
         api_key=api_key,
         http_options=types.HttpOptions(timeout=int(timeout * 1000)),
@@ -73,17 +77,17 @@ class GeminiProvider:
         *,
         api_key: str | None = None,
         model: str = "gemini-3.8-flash",
-        timeout: float = 20.0,
+        timeout: float | None = None,
         max_retries: int = 1,
         backoff_seconds: float = 0.25,
         client: Any | None = None,
-        client_factory: Callable[[str, float], Any] | None = None,
+        client_factory: Callable[[str, float | None], Any] | None = None,
         sleeper: Callable[[float], None] = time.sleep,
     ):
         self._api_key = os.getenv("GEMINI_API_KEY", "") if api_key is None else api_key
         if not self._api_key:
             raise ValueError("GEMINI_API_KEY is required for the Gemini provider")
-        if timeout <= 0:
+        if timeout is not None and timeout <= 0:
             raise ValueError("timeout must be positive")
         if not 0 <= max_retries <= 5:
             raise ValueError("max_retries must be between 0 and 5")
