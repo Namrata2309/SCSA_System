@@ -1,177 +1,893 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f6f8">
+  <meta name="theme-color" content="#f5f7fd">
   <link rel="icon" href="data:,">
   <title>Support Desk | SCSA Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
-      --ink: #1d2939;
-      --muted: #667085;
-      --line: #e4e7ec;
-      --surface: #fff;
-      --canvas: #f4f6f8;
-      --blue: #275efe;
-      --blue-dark: #1949d8;
-      --green: #16804a;
-      --green-bg: #e9f8ef;
-      --amber: #9a5b00;
-      --amber-bg: #fff4dc;
-      --red: #b42318;
-      --shadow: 0 10px 30px rgba(16, 24, 40, .055);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Core Palette */
+      --ink: #1e1b4b;
+      --ink-secondary: #334155;
+      --muted: #64748b;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-hover: rgba(255, 255, 255, 0.98);
+      --border: rgba(226, 232, 240, 0.9);
+      
+      /* Vibrant Accents */
+      --violet-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      --violet-glow: rgba(139, 92, 246, 0.28);
+      --primary: #6366f1;
+      --primary-subtle: #ede9fe;
+      
+      /* State Tints */
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --green-border: #a7f3d0;
+      --green-glow: rgba(16, 185, 129, 0.15);
+      
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+      --amber-glow: rgba(245, 158, 11, 0.15);
+      
+      --red: #e11d48;
+      --red-bg: #fff1f2;
+      --red-border: #fecdd3;
+      
+      /* Refined Elevation Shadows */
+      --shadow-sm: 0 4px 10px rgba(99, 102, 241, 0.04);
+      --shadow-md: 0 12px 28px -4px rgba(79, 70, 229, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+      --shadow-lg: 0 20px 40px -8px rgba(99, 102, 241, 0.14);
+      
+      --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: var(--canvas); }
-    button, textarea { font: inherit; }
-    .topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 5vw; background: var(--surface); border-bottom: 1px solid var(--line); }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 750; letter-spacing: -.02em; }
-    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: white; background: var(--blue); border-radius: 10px; font-size: 15px; }
-    .top-meta { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 13px; }
-    .mode { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid #b9e8ca; border-radius: 99px; color: var(--green); background: var(--green-bg); font-weight: 700; }
-    .mode::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-    .mode.live { border-color: #fedf89; color: var(--amber); background: var(--amber-bg); }
-    .mode.unavailable { border-color: #fecdca; color: var(--red); background: #fef3f2; }
-    main { width: min(1180px, 92vw); margin: 34px auto 56px; }
-    .intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-    .eyebrow { margin: 0 0 8px; color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
-    h1 { margin: 0; font-size: clamp(27px, 4vw, 36px); letter-spacing: -.045em; }
-    .intro p { max-width: 680px; margin: 9px 0 0; color: var(--muted); line-height: 1.55; }
-    .health { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; color: var(--muted); font-size: 13px; }
-    .health-dot { width: 8px; height: 8px; border-radius: 50%; background: #98a2b3; }
-    .health.ok .health-dot { background: #12b76a; box-shadow: 0 0 0 3px #d1fadf; }
-    .health.bad .health-dot { background: var(--red); }
-    .columns { display: grid; grid-template-columns: minmax(300px, .88fr) minmax(400px, 1.12fr); gap: 20px; align-items: start; }
-    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
-    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 22px 15px; border-bottom: 1px solid #f0f1f3; }
-    .card-head h2 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
-    .step { color: #98a2b3; font-size: 12px; font-weight: 700; }
-    .card-body { padding: 20px 22px 22px; }
-    .label-row { display: flex; justify-content: space-between; align-items: center; margin: 0 0 9px; }
-    label { font-size: 13px; font-weight: 700; }
-    .hint { color: var(--muted); font-size: 12px; }
-    textarea { display: block; width: 100%; min-height: 154px; resize: vertical; padding: 13px 14px; border: 1px solid #d0d5dd; border-radius: 10px; color: var(--ink); background: #fff; line-height: 1.55; outline: none; }
-    textarea:focus { border-color: #84adff; box-shadow: 0 0 0 3px #eaf1ff; }
-    .presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 21px; }
-    .preset { border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; color: #475467; background: #fff; font-size: 12px; cursor: pointer; }
-    .preset:hover { border-color: #b2ccff; color: var(--blue); background: #f6f9ff; }
-    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border: 0; border-radius: 9px; padding: 0 16px; color: #fff; background: var(--blue); font-weight: 750; cursor: pointer; transition: background .15s, transform .15s; }
-    .button:hover { background: var(--blue-dark); transform: translateY(-1px); }
-    .button:disabled { opacity: .62; cursor: wait; transform: none; }
-    .button.full { width: 100%; }
-    .privacy { margin: 13px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; text-align: center; }
-    .startup-warning { margin: 0 0 18px; padding: 14px 16px; border: 1px solid #fedf89; border-radius: 11px; color: #854a0e; background: #fffaf0; font-size: 13px; line-height: 1.55; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--font);
+      background-color: #f8fafc;
+      /* Dynamic Pleasant Aurora Mesh Gradient */
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+        radial-gradient(at 95% 10%, rgba(217, 70, 239, 0.12) 0px, transparent 45%),
+        radial-gradient(at 15% 55%, rgba(56, 189, 248, 0.12) 0px, transparent 40%),
+        radial-gradient(at 85% 85%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, textarea { font-family: inherit; }
+
+    /* Top Navigation Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(28px, calc((100vw - 1280px) / 2));
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--violet-gradient);
+      border-radius: 12px;
+      box-shadow: 0 6px 16px var(--violet-glow);
+      font-weight: 800;
+      font-size: 16px;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .brand:hover .brand-mark {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .mode {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      border: 1px solid #c7d2fe;
+      background: #f5f3ff;
+      color: #6366f1;
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .mode::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .mode.live {
+      border-color: var(--amber-border);
+      color: var(--amber);
+      background: var(--amber-bg);
+    }
+
+    .mode.unavailable {
+      border-color: var(--red-border);
+      color: var(--red);
+      background: var(--red-bg);
+    }
+
+    /* Main Container */
+    main {
+      width: min(1240px, 92vw);
+      margin: 42px auto 68px;
+    }
+
+    /* Intro Hero */
+    .intro {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: #8b5cf6;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: rgba(139, 92, 246, 0.08);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .eyebrow::before {
+      content: "✦";
+      font-size: 10px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .intro p:not(.eyebrow) {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    .health {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.06);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .health.ok .health-dot {
+      background: var(--green);
+      box-shadow: 0 0 0 3.5px var(--green-border);
+    }
+
+    .health.bad .health-dot {
+      background: var(--red);
+      box-shadow: 0 0 0 3.5px var(--red-border);
+    }
+
+    /* Startup alert */
+    .startup-warning {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border: 1px solid var(--amber-border);
+      border-radius: 14px;
+      background: var(--amber-bg);
+      color: #92400e;
+      font-size: 13px;
+      line-height: 1.6;
+      box-shadow: 0 6px 18px var(--amber-glow);
+    }
+
     .startup-warning[hidden] { display: none; }
-    .startup-warning strong { display: block; margin-bottom: 4px; color: #7a2e0e; }
-    .startup-warning code { padding: 2px 5px; border-radius: 4px; background: #fff0c2; color: #69410a; }
-    .empty { display: grid; min-height: 270px; place-content: center; justify-items: center; padding: 30px; color: var(--muted); text-align: center; }
-    .empty-icon { width: 44px; height: 44px; display: grid; place-items: center; margin-bottom: 13px; border-radius: 14px; color: var(--blue); background: #eef4ff; font-size: 21px; }
-    .empty strong { color: var(--ink); font-size: 14px; }
-    .empty p { max-width: 300px; margin: 7px 0 0; font-size: 13px; line-height: 1.5; }
-    .result { padding: 18px 22px 22px; }
+    .startup-warning strong { display: block; margin-bottom: 4px; font-weight: 700; }
+    .startup-warning code {
+      font-family: var(--font-mono);
+      background: rgba(217, 119, 6, 0.14);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    /* Layout Columns */
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.88fr) minmax(440px, 1.12fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(199, 210, 254, 0.7);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.6) 100%);
+    }
+
+    .card-head h2, .queue-head h2 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .step {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #6366f1;
+      background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #c7d2fe;
+    }
+
+    .card-body { padding: 24px; }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Textarea */
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 155px;
+      resize: vertical;
+      padding: 15px 17px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.02);
+    }
+
+    textarea::placeholder { color: #94a3b8; }
+    textarea:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.22);
+    }
+
+    /* Scenario Tags */
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 24px;
+    }
+
+    .preset {
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: #ffffff;
+      color: var(--ink-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .preset:hover {
+      border-color: #c7d2fe;
+      background: #f5f3ff;
+      color: #6366f1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.12);
+    }
+
+    .preset.selected {
+      border-color: transparent;
+      background: var(--violet-gradient);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 6px 16px var(--violet-glow);
+    }
+
+    /* Vibrant Button */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      border: 0;
+      border-radius: 14px;
+      padding: 0 24px;
+      color: #ffffff;
+      background: var(--violet-gradient);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--violet-glow);
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(139, 92, 246, 0.38);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .button.full { width: 100%; }
+
+    .privacy {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Step 2: Empty / Result */
+    .empty {
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      min-height: 380px;
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+      color: #6366f1;
+      font-size: 24px;
+      border: 1px solid #c7d2fe;
+      box-shadow: 0 8px 18px rgba(99, 102, 241, 0.12);
+    }
+
+    .empty strong { color: var(--ink); font-size: 15px; font-weight: 800; }
+    .empty p { max-width: 320px; margin-top: 6px; font-size: 13px; line-height: 1.6; }
+
+    .result { padding: 24px; }
     .result[hidden], .empty[hidden] { display: none; }
-    .decision { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border-radius: 11px; }
-    .decision.eligible { color: #05603a; background: var(--green-bg); }
-    .decision.review { color: #854a0e; background: var(--amber-bg); }
-    .decision-icon { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: rgba(255,255,255,.75); font-weight: 900; }
-    .decision-title { margin: 1px 0 4px; font-size: 14px; font-weight: 800; }
-    .decision-copy { margin: 0; font-size: 12px; line-height: 1.5; }
-    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
-    .fact { min-width: 0; padding: 11px 12px; border: 1px solid #eaecf0; border-radius: 10px; }
-    .fact-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-    .fact-value { overflow-wrap: anywhere; font-size: 13px; font-weight: 750; }
-    .section-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 20px 0 9px; font-size: 12px; font-weight: 800; }
-    .count { color: var(--muted); font-size: 11px; font-weight: 600; }
-    .draft { padding: 13px 14px; border: 1px solid #dbe5ff; border-left: 3px solid var(--blue); border-radius: 8px; background: #f8faff; color: #344054; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
-    .evidence-list { display: grid; gap: 8px; }
-    .evidence { padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; }
-    .evidence-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
-    .policy-id { font-size: 11px; font-weight: 800; }
-    .policy-category { margin-left: 6px; color: var(--muted); font-size: 11px; }
-    .score { flex: 0 0 auto; color: #475467; font-size: 11px; font-weight: 800; }
-    .evidence-text { margin: 0; color: #475467; font-size: 12px; line-height: 1.5; }
-    .evidence-note { margin-top: 8px; color: var(--muted); font-size: 11px; }
+
+    /* Decision Banner with Glow */
+    .decision {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 22px;
+      transition: all 0.2s ease;
+    }
+
+    .decision.eligible {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid var(--green-border);
+      color: #065f46;
+      box-shadow: 0 6px 18px var(--green-glow);
+    }
+
+    .decision.review {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid var(--amber-border);
+      color: #92400e;
+      box-shadow: 0 6px 18px var(--amber-glow);
+    }
+
+    .decision-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: #ffffff;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .decision-title { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
+    .decision-copy { font-size: 12px; line-height: 1.55; opacity: 0.95; }
+
+    /* Facts Grid Tiles */
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .fact {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    .fact-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fact-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 24px 0 10px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: none;
+    }
+
+    /* Draft Output */
+    .draft {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #6366f1;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink-secondary);
+      white-space: pre-wrap;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    /* Policy Evidence */
+    .evidence-list { display: grid; gap: 10px; }
+    .evidence {
+      padding: 15px 16px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    .evidence:hover {
+      border-color: #c7d2fe;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(99, 102, 241, 0.08);
+    }
+
+    .evidence-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .policy-id {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .policy-category {
+      margin-left: 8px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .score {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #6366f1;
+      background: #ede9fe;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .evidence-text {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #475569;
+    }
+
+    .evidence-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .evidence-note::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
     .evidence-note.match { color: var(--green); }
     .evidence-note.mismatch { color: var(--amber); }
-    .queue { margin-top: 20px; }
-    .queue-head { display: flex; justify-content: space-between; align-items: center; padding: 17px 22px; border-bottom: 1px solid #f0f1f3; }
-    .queue-head h2 { margin: 0; font-size: 15px; }
-    .queue-head button { border: 0; color: var(--blue); background: none; font-size: 12px; font-weight: 750; cursor: pointer; }
-    .queue-body { padding: 0 22px; }
-    .queue-row { display: grid; grid-template-columns: minmax(100px, .6fr) minmax(150px, 1.4fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f4f7; }
-    .queue-row:last-child { border-bottom: 0; }
-    .queue-id { font-size: 12px; font-weight: 800; }
-    .queue-reason { color: var(--muted); font-size: 11px; line-height: 1.4; }
-    .queue-category { padding: 5px 8px; border-radius: 99px; color: #475467; background: #f2f4f7; font-size: 10px; font-weight: 750; text-transform: capitalize; }
-    .queue-empty { padding: 17px 0; color: var(--muted); font-size: 12px; }
-    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 2; max-width: min(420px, calc(100vw - 44px)); padding: 12px 15px; border-radius: 10px; color: white; background: #344054; box-shadow: var(--shadow); font-size: 13px; }
+
+    /* Human Review Queue */
+    .queue { margin-top: 28px; }
+    .queue-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.6) 100%);
+    }
+
+    .queue-head button {
+      border: 0;
+      border-radius: 8px;
+      padding: 7px 12px;
+      background: #f5f3ff;
+      color: #6366f1;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .queue-head button:hover {
+      background: #ede9fe;
+      transform: translateY(-1px);
+    }
+
+    .queue-body { padding: 4px 24px; }
+
+    .queue-row {
+      display: grid;
+      grid-template-columns: minmax(130px, 0.7fr) minmax(160px, 1.3fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    }
+
+    .queue-row:last-child { border-bottom: none; }
+    .queue-id { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--ink); }
+    .queue-reason { color: var(--muted); font-size: 12.5px; }
+    .queue-category {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: capitalize;
+      background: #f1f5f9;
+      color: #334155;
+      text-align: center;
+    }
+
+    .queue-empty { padding: 22px 0; color: var(--muted); font-size: 13px; text-align: center; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 50;
+      max-width: min(420px, calc(100vw - 48px));
+      padding: 14px 20px;
+      border-radius: 14px;
+      background: #1e1b4b;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 16px 36px rgba(30, 27, 75, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      animation: popIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      from { transform: translateY(12px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
     .toast[hidden] { display: none; }
-    @media (max-width: 840px) { .columns { grid-template-columns: 1fr; } .intro { align-items: flex-start; flex-direction: column; } .health { align-self: flex-start; } }
-    @media (max-width: 520px) { .topbar { height: 60px; padding: 0 4vw; } .top-meta { gap: 9px; font-size: 11px; } main { width: 92vw; margin-top: 24px; } .card-head, .card-body, .result, .queue-head { padding-left: 16px; padding-right: 16px; } .queue-body { padding: 0 16px; } .facts { grid-template-columns: repeat(2, 1fr); } .queue-row { grid-template-columns: 1fr auto; } .queue-reason { grid-column: 1 / -1; grid-row: 2; } }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .columns { grid-template-columns: 1fr; }
+      .intro { flex-direction: column; align-items: flex-start; }
+      .facts { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .topbar { padding: 0 16px; }
+      .top-meta > span:last-child { display: none; }
+      main { width: 94vw; margin-top: 24px; }
+      .card-body, .result, .queue-head { padding-left: 16px; padding-right: 16px; }
+      .queue-body { padding: 0 16px; }
+      .queue-row { grid-template-columns: 1fr; gap: 6px; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Topbar -->
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">S</span><span>Support Desk</span></div>
-    <div class="top-meta"><span class="mode">DETECTING MODE</span><span>Smart Customer Support Agent</span></div>
+    <div class="brand">
+      <span class="brand-mark">S</span>
+      <span>Support Desk</span>
+    </div>
+    <div class="top-meta">
+      <span class="mode">DETECTING MODE</span>
+      <span>Smart Customer Support Agent</span>
+    </div>
   </header>
+
+  <!-- Main Container -->
   <main>
     <section class="intro">
       <div>
         <p class="eyebrow">Ticket triage workspace</p>
         <h1>Review every decision clearly.</h1>
-        <p>Submit a synthetic support ticket to see its policy evidence, response draft, and deterministic routing decision.</p>
+        <p>Submit a synthetic customer support ticket to inspect its automated policy evidence, draft resolution, and deterministic routing decision.</p>
       </div>
-      <div class="health" id="health"><span class="health-dot"></span><span>Checking local service…</span></div>
+      <div class="health" id="health">
+        <span class="health-dot"></span>
+        <span>Checking local service…</span>
+      </div>
     </section>
+
     <aside class="startup-warning" id="startup-warning" role="alert" hidden>
       <strong>Connect to the SCSA demo server</strong>
-      This page is not connected to the SCSA API. In PowerShell, go to the project folder and run
-      <code>python -m app.cli serve --provider mock</code>, then open <code>http://127.0.0.1:8000</code>.
+      This page is not connected to the SCSA API. In PowerShell or Terminal, navigate to your project directory and run
+      <code>python -m app.cli serve --provider mock</code>, then load <code>http://127.0.0.1:8000</code>.
     </aside>
 
+    <!-- Two-Column Workbench -->
     <div class="columns">
+      
+      <!-- Step 1: Input -->
       <section class="card">
-        <div class="card-head"><h2>New support ticket</h2><span class="step">STEP 1 OF 2</span></div>
+        <div class="card-head">
+          <h2>New support ticket</h2>
+          <span class="step">STEP 1 OF 2</span>
+        </div>
         <div class="card-body">
-          <div class="label-row"><label for="message">Customer message</label><span class="hint">Synthetic demo data only</span></div>
-          <textarea id="message" maxlength="2000" placeholder="Describe the customer's issue…"></textarea>
-          <div class="label-row" style="margin-top:15px"><label>Try a sample scenario</label><span class="hint">Click to fill</span></div>
+          <div class="label-row">
+            <label for="message">Customer message</label>
+            <span class="hint">Synthetic demo data only</span>
+          </div>
+          <textarea id="message" maxlength="2000" placeholder="Type or paste the customer's inquiry here…"></textarea>
+          
+          <div class="label-row" style="margin-top: 10px;">
+            <span class="hint">Tip: Press Ctrl + Enter to analyze</span>
+            <span class="hint" id="char-count">0 / 2,000</span>
+          </div>
+
+          <div class="label-row" style="margin-top: 22px;">
+            <label>Try a sample scenario</label>
+            <span class="hint">Click to load</span>
+          </div>
+          
           <div class="presets" id="presets">
-            <button class="preset" type="button" data-message="Standard shipping estimates are 3 to 5 business days. Carrier delays can extend delivery.">Routine · eligible</button>
+            <button class="preset" type="button" data-message="Standard shipping estimates are 3 to 5 business days. Carrier delays can extend delivery.">Routine · Eligible</button>
             <button class="preset" type="button" data-message="I want to return the unused shoes delivered last week.">Low evidence</button>
-            <button class="preset" type="button" data-message="I will sue if you do not reverse this charge.">Legal threat</button>
+            <button class="preset" type="button" data-message="I will sue if you do not reverse this charge immediately.">Legal threat</button>
             <button class="preset" type="button" data-message="I dispute the $125 charge for order 8830.">High dispute</button>
           </div>
-          <button class="button full" id="submit" type="button"><span>Analyze ticket</span><span aria-hidden="true">→</span></button>
+
+          <button class="button full" id="submit" type="button">
+            <span>Analyze ticket</span>
+            <span aria-hidden="true">→</span>
+          </button>
           <p class="privacy" id="privacy-note">The demo prepares drafts only; it never sends a customer reply.</p>
         </div>
       </section>
 
+      <!-- Step 2: Evidence & Results -->
       <section class="card">
-        <div class="card-head"><h2>Decision and evidence</h2><span class="step">STEP 2 OF 2</span></div>
-        <div class="empty" id="empty-state"><span class="empty-icon">✦</span><strong>Ticket analysis appears here</strong><p>Choose a sample scenario or enter a message, then analyze it to inspect the decision and supporting policy evidence.</p></div>
+        <div class="card-head">
+          <h2>Decision and evidence</h2>
+          <span class="step">STEP 2 OF 2</span>
+        </div>
+
+        <div class="empty" id="empty-state">
+          <span class="empty-icon">✦</span>
+          <strong>Ticket analysis appears here</strong>
+          <p>Select a scenario preset or submit customer text to inspect routing safety checks, classification facts, and policy matches.</p>
+        </div>
+
         <div class="result" id="result" hidden>
-          <div class="decision" id="decision"><span class="decision-icon" id="decision-icon"></span><div><p class="decision-title" id="decision-title"></p><p class="decision-copy" id="decision-copy"></p></div></div>
+          <div class="decision" id="decision">
+            <span class="decision-icon" id="decision-icon"></span>
+            <div>
+              <p class="decision-title" id="decision-title"></p>
+              <p class="decision-copy" id="decision-copy"></p>
+            </div>
+          </div>
+
           <div class="facts" id="facts"></div>
-          <div class="section-title">Draft response <span class="count">Not sent to customer</span></div>
+
+          <div class="section-title">
+            Draft response 
+            <span class="count">Internal review only</span>
+          </div>
           <div class="draft" id="draft"></div>
-          <div class="section-title">Retrieved policy evidence <span class="count" id="evidence-count"></span></div>
+
+          <div class="section-title">
+            Retrieved policy evidence 
+            <span class="count" id="evidence-count"></span>
+          </div>
           <div class="evidence-list" id="evidence"></div>
         </div>
       </section>
     </div>
 
+    <!-- Review Queue -->
     <section class="card queue">
-      <div class="queue-head"><h2>Human review queue <span class="count" id="queue-count"></span></h2><button type="button" id="refresh-queue">Refresh queue ↻</button></div>
-      <div class="queue-body" id="queue"><div class="queue-empty">Loading review queue…</div></div>
+      <div class="queue-head">
+        <h2>Human review queue <span class="count" id="queue-count"></span></h2>
+        <button type="button" id="refresh-queue">Refresh queue ↻</button>
+      </div>
+      <div class="queue-body" id="queue">
+        <div class="queue-empty">Loading review queue…</div>
+      </div>
     </section>
   </main>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
+  <!-- Functional JavaScript Logic -->
   <script>
     const byId = (id) => document.getElementById(id);
     const message = byId("message");
@@ -210,37 +926,46 @@
       const container = byId("evidence");
       container.replaceChildren();
       byId("evidence-count").textContent = `${policies.length} result${policies.length === 1 ? "" : "s"}`;
+      
       if (!policies.length) {
         const none = document.createElement("div");
         none.className = "evidence";
-        none.textContent = "No policy matched this message. The safe path is human review.";
+        none.textContent = "No policy matched this message. Escalated to human review for safety.";
         container.append(none);
         return;
       }
+
       for (const policy of policies) {
         const card = document.createElement("article");
         card.className = "evidence";
+        
         const top = document.createElement("div");
         top.className = "evidence-top";
+        
         const title = document.createElement("div");
         const policyId = document.createElement("span");
         policyId.className = "policy-id";
         policyId.textContent = policy.policy_id;
+        
         const policyCategory = document.createElement("span");
         policyCategory.className = "policy-category";
         policyCategory.textContent = policy.category;
         title.append(policyId, policyCategory);
+        
         const score = document.createElement("span");
         score.className = "score";
-        score.textContent = `${Number(policy.similarity_score).toFixed(2)} similarity`;
+        score.textContent = `${(Number(policy.similarity_score) * 100).toFixed(0)}% match`;
         top.append(title, score);
+        
         const excerpt = document.createElement("p");
         excerpt.className = "evidence-text";
         excerpt.textContent = policy.excerpt;
+        
         const note = document.createElement("div");
         const matches = policy.category === category;
         note.className = `evidence-note ${matches ? "match" : "mismatch"}`;
-        note.textContent = matches ? "Category matches this ticket" : `Different category · ticket classified as ${category}`;
+        note.textContent = matches ? "Matches identified ticket category" : `Ticket classified under: ${category}`;
+        
         card.append(top, excerpt, note);
         container.append(card);
       }
@@ -250,20 +975,24 @@
       byId("empty-state").hidden = true;
       byId("result").hidden = false;
       const review = result.human_in_loop_required;
+      
       const decision = byId("decision");
       decision.className = `decision ${review ? "review" : "eligible"}`;
       byId("decision-icon").textContent = review ? "!" : "✓";
       byId("decision-title").textContent = review ? "Human review required" : "Eligible for automation";
-      byId("decision-copy").textContent = result.escalation_reason || (review ? "Escalated for a support specialist." : "No escalation rules were triggered.");
+      byId("decision-copy").textContent = result.escalation_reason || (review ? "Escalated for a support specialist." : "All automation safety checks passed.");
+      
       const facts = byId("facts");
       facts.replaceChildren();
-      addFact(facts, "Ticket", result.ticket_id);
+      addFact(facts, "Ticket ID", result.ticket_id);
       addFact(facts, "Category", result.category);
-      addFact(facts, "Confidence", `${Math.round(result.confidence_score * 100)}%`);
-      addFact(facts, "Sentiment", result.sentiment.replaceAll("_", " "));
+      addFact(facts, "Confidence", `${Math.round((result.confidence_score || 0) * 100)}%`);
+      addFact(facts, "Sentiment", (result.sentiment || "Unknown").replaceAll("_", " "));
+      
       const amount = result.extracted_entities?.disputed_amount;
       addFact(facts, "Disputed amount", amount == null ? "Not stated" : `$${Number(amount).toFixed(2)}`);
       addFact(facts, "Order ID", result.extracted_entities?.order_id || "Not found");
+      
       byId("draft").textContent = result.auto_response_draft;
       renderEvidence(policies, result.category);
     }
@@ -292,7 +1021,7 @@
         renderResult(result, evidence.policies);
         await refreshQueue();
       } catch (error) {
-        showToast(error.message || "Unable to process ticket. Check that the local service is running.");
+        showToast(error.message || "Unable to process ticket. Check that your local service is running.");
       } finally {
         submitButton.disabled = false;
         submitButton.firstElementChild.textContent = "Analyze ticket";
@@ -303,12 +1032,12 @@
       const container = byId("queue");
       try {
         const data = await fetchJson("/review-queue?limit=5");
-        byId("queue-count").textContent = `${data.count} shown`;
+        byId("queue-count").textContent = `${data.count} pending`;
         container.replaceChildren();
-        if (!data.tickets.length) {
+        if (!data.tickets || !data.tickets.length) {
           const empty = document.createElement("div");
           empty.className = "queue-empty";
-          empty.textContent = "No tickets currently need review.";
+          empty.textContent = "No tickets currently need human review.";
           container.append(empty);
           return;
         }
@@ -332,7 +1061,7 @@
         container.replaceChildren();
         const unavailable = document.createElement("div");
         unavailable.className = "queue-empty";
-        unavailable.textContent = "Review queue unavailable. Check the local service.";
+        unavailable.textContent = "Review queue unavailable. Check backend connection.";
         container.append(unavailable);
       }
     }
@@ -341,9 +1070,17 @@
       const button = event.target.closest("button[data-message]");
       if (button) {
         message.value = button.dataset.message;
+        byId("char-count").textContent = `${message.value.length.toLocaleString()} / 2,000`;
+        document.querySelectorAll(".preset").forEach((item) => item.classList.toggle("selected", item === button));
         message.focus();
       }
     });
+
+    message.addEventListener("input", () => {
+      byId("char-count").textContent = `${message.value.length.toLocaleString()} / 2,000`;
+      document.querySelectorAll(".preset").forEach((item) => item.classList.remove("selected"));
+    });
+
     submitButton.addEventListener("click", analyzeTicket);
     byId("refresh-queue").addEventListener("click", refreshQueue);
     message.addEventListener("keydown", (event) => {
@@ -355,26 +1092,28 @@
       byId("health").className = "health bad";
       byId("health").lastElementChild.textContent = "SCSA API not connected";
       submitButton.disabled = true;
-      byId("queue").textContent = "Start the local server to load the review queue.";
-    } else fetchJson("/health").then((health) => {
-      byId("health").className = "health ok";
-      byId("health").lastElementChild.textContent = "Local service connected";
-      const badge = document.querySelector(".mode");
-      const mode = health.provider_mode || "unavailable";
-      badge.className = `mode ${mode}`;
-      badge.textContent = mode === "mock" ? "OFFLINE MOCK" : mode === "live" ? `LIVE · ${health.model_version}` : "PROVIDER UNAVAILABLE";
-      byId("privacy-note").textContent = mode === "mock"
-        ? "Mock mode makes no external model calls. This demo prepares drafts only; it never sends a customer reply."
-        : mode === "live"
-          ? "Live mode sends ticket text to the configured model provider. Use synthetic data only. Drafts are never sent to customers."
-          : "The configured provider is unavailable. Requests will fail safely into human review; drafts are never sent to customers.";
-    }).catch(() => {
-      byId("startup-warning").hidden = false;
-      byId("health").className = "health bad";
-      byId("health").lastElementChild.textContent = "SCSA API not connected";
-      submitButton.disabled = true;
-    });
-    if (window.location.protocol !== "file:") refreshQueue();
+      byId("queue").textContent = "Start the local server to view the review queue.";
+    } else {
+      fetchJson("/health").then((health) => {
+        byId("health").className = "health ok";
+        byId("health").lastElementChild.textContent = "Service connected";
+        const badge = document.querySelector(".mode");
+        const mode = health.provider_mode || "unavailable";
+        badge.className = `mode ${mode}`;
+        badge.textContent = mode === "mock" ? "OFFLINE MOCK" : mode === "live" ? `LIVE · ${health.model_version}` : "PROVIDER UNAVAILABLE";
+        byId("privacy-note").textContent = mode === "mock"
+          ? "Mock mode makes no external model calls. This demo prepares drafts only; it never sends a customer reply."
+          : mode === "live"
+            ? "Live mode sends ticket text to configured model provider. Drafts are never sent to customers directly."
+            : "The provider is unavailable. Requests safely fall back into human review.";
+      }).catch(() => {
+        byId("startup-warning").hidden = false;
+        byId("health").className = "health bad";
+        byId("health").lastElementChild.textContent = "SCSA API not connected";
+        submitButton.disabled = true;
+      });
+      refreshQueue();
+    }
   </script>
 </body>
 </html>
