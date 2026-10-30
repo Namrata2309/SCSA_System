@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 from urllib.error import URLError
 
 from app.governance import route_ticket
@@ -14,6 +15,7 @@ from app.llm import (
     assess_or_review,
     create_provider,
 )
+from app.llm.gemini import _create_client
 from app.schemas import CustomerTicket, ModelAssessment, PolicyEvidence
 
 
@@ -191,18 +193,28 @@ class ProviderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             env_path = Path(folder) / ".env"
             env_path.write_text(
-                "LLM_PROVIDER=gemini\nGEMINI_API_KEY=test-gemini-key\nLLM_MODEL=custom-gemini\n",
+                "LLM_PROVIDER=gemini\nGEMINI_API_KEY=test-gemini-key\n"
+                "LLM_MODEL=custom-gemini\nGEMINI_THINKING_LEVEL=medium\n",
                 encoding="utf-8",
             )
             provider = create_provider(env_file=env_path, environ={})
         self.assertIsInstance(provider, GeminiProvider)
         self.assertEqual(provider.model_version, "custom-gemini")
+        self.assertEqual(provider.thinking_level, "medium")
 
     def test_gemini_defaults_model_and_requires_gemini_key(self):
         provider = create_provider("gemini", environ={"GEMINI_API_KEY": "test-key"}, env_file=None)
         self.assertEqual(provider.model_version, "gemini-3.8-flash")
+        self.assertEqual(provider.thinking_level, "low")
         with self.assertRaisesRegex(ValueError, "GEMINI_API_KEY"):
             create_provider("gemini", environ={}, env_file=None)
+
+    def test_gemini_client_uses_default_deadline_and_single_sdk_attempt(self):
+        with patch("google.genai.Client") as client_constructor:
+            _create_client("test-key", None)
+        http_options = client_constructor.call_args.kwargs["http_options"]
+        self.assertIsNone(http_options.timeout)
+        self.assertEqual(http_options.retry_options.attempts, 1)
 
     def test_gemini_structured_output_is_validated_and_usage_captured(self):
         client = FakeGeminiClient([FakeGeminiResponse(response_bytes_json(), FakeGeminiUsage())])
@@ -222,6 +234,7 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual(factory_calls, [("private-key", 7.5)])
         self.assertEqual(request["model"], "gemini-3.8-flash")
         self.assertEqual(request["config"]["response_mime_type"], "application/json")
+        self.assertEqual(request["config"]["thinking_config"], {"thinking_level": "low"})
         self.assertNotIn("response_schema", request["config"])
         self.assertEqual(request["config"]["response_json_schema"]["type"], "object")
         self.assertIn("extracted_entities", request["config"]["response_json_schema"]["required"])

@@ -57,15 +57,16 @@ _ASSESSMENT_JSON_SCHEMA = {
 
 def _create_client(api_key: str, timeout: float | None) -> Any:
     from google import genai
-
-    # Use the SDK's default deadline unless a caller explicitly overrides it.
-    if timeout is None:
-        return genai.Client(api_key=api_key)
-
     from google.genai import types
+
+    # Keep retries in the adapter's bounded retry loop instead of stacking the
+    # SDK's default retries on every attempt. Omit timeout to use the SDK default.
+    http_options = {"retry_options": types.HttpRetryOptions(attempts=1)}
+    if timeout is not None:
+        http_options["timeout"] = int(timeout * 1000)
     return genai.Client(
         api_key=api_key,
-        http_options=types.HttpOptions(timeout=int(timeout * 1000)),
+        http_options=types.HttpOptions(**http_options),
     )
 
 
@@ -78,6 +79,7 @@ class GeminiProvider:
         api_key: str | None = None,
         model: str = "gemini-3.8-flash",
         timeout: float | None = None,
+        thinking_level: str = "low",
         max_retries: int = 1,
         backoff_seconds: float = 0.25,
         client: Any | None = None,
@@ -89,6 +91,8 @@ class GeminiProvider:
             raise ValueError("GEMINI_API_KEY is required for the Gemini provider")
         if timeout is not None and timeout <= 0:
             raise ValueError("timeout must be positive")
+        if thinking_level not in {"low", "medium", "high"}:
+            raise ValueError("thinking_level must be low, medium, or high")
         if not 0 <= max_retries <= 5:
             raise ValueError("max_retries must be between 0 and 5")
         if backoff_seconds < 0:
@@ -96,6 +100,7 @@ class GeminiProvider:
 
         self.model_version = model
         self.timeout = timeout
+        self.thinking_level = thinking_level
         self.max_retries = max_retries
         self.backoff_seconds = backoff_seconds
         self._client = client
@@ -166,6 +171,7 @@ class GeminiProvider:
                         "system_instruction": _SYSTEM_INSTRUCTION,
                         "response_mime_type": "application/json",
                         "response_json_schema": _ASSESSMENT_JSON_SCHEMA,
+                        "thinking_config": {"thinking_level": self.thinking_level},
                     },
                 )
                 self.last_retry_count = attempt

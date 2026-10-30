@@ -62,5 +62,6 @@ def create_provider(
         return GeminiProvider(
             api_key=target.get("GEMINI_API_KEY", ""),
             model=model or "gemini-3.8-flash",
+            thinking_level=target.get("GEMINI_THINKING_LEVEL", "low"),
         )
     raise ValueError(f"Unsupported LLM_PROVIDER: {selected}")
