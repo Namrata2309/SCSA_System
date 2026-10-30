@@ -1,0 +1,2 @@
+pydantic==2.12.5
+google-genai==2.34.0

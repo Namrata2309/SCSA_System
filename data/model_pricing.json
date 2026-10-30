@@ -1,0 +1,19 @@
+{
+  "provider": "Groq",
+  "model": "openai/gpt-oss-20b",
+  "checked_on": "2026-10-30",
+  "source_url": "https://console.groq.com/docs/model/openai/gpt-oss-20b",
+  "currency": "USD",
+  "input_usd_per_million_tokens": 0.075,
+  "output_usd_per_million_tokens": 0.3,
+  "scenario_token_assumptions_per_ticket": {
+    "low": {"input_tokens": 1000, "output_tokens": 250},
+    "base": {"input_tokens": 2000, "output_tokens": 500},
+    "high": {"input_tokens": 4000, "output_tokens": 1000}
+  },
+  "assumptions": [
+    "Token counts are planning assumptions, not observed measurements.",
+    "Scenarios assume one model request per ticket and zero retries.",
+    "Excludes hosting, database, networking, taxes, and operational labor."
+  ]
+}

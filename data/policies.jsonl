@@ -1,0 +1,6 @@
+{"policy_id":"POL-RET-001","category":"returns","policy_text":"Eligible unused items may be returned within 30 days of delivery. Final-sale items are not returnable."}
+{"policy_id":"POL-REF-001","category":"refunds","policy_text":"Approved refunds are sent to the original payment method. Processing may take 5 to 10 business days after approval."}
+{"policy_id":"POL-SHP-001","category":"shipping","policy_text":"Standard shipping estimates are 3 to 5 business days. Carrier delays can extend delivery."}
+{"policy_id":"POL-ORD-001","category":"order_status","policy_text":"Customers can view current order status using the order tracking link in their confirmation email."}
+{"policy_id":"POL-BIL-001","category":"billing","policy_text":"A pending authorization is not a completed charge and typically clears according to the customer's bank schedule."}
+{"policy_id":"POL-DMG-001","category":"damaged_item","policy_text":"Customers should report damaged items with the order number and photos so support can review available resolutions."}
