@@ -1,5 +1,6 @@
 """End-to-end orchestration for SCSA ticket processing."""
 
+import logging
 from datetime import datetime, timezone
 from typing import Protocol
 
@@ -13,6 +14,9 @@ from .schemas import (
     ExtractedEntities,
     RoutingDecision,
 )
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class TicketStore(Protocol):
@@ -64,7 +68,13 @@ class SupportPipeline:
             entities = assessment.extracted_entities
             confidence = assessment.confidence_score
             draft = assessment.auto_response_draft
-        except Exception:
+        except Exception as error:
+            _LOGGER.error(
+                "Ticket assessment or routing failed; using human-review fallback "
+                "(provider=%s, error_type=%s)",
+                getattr(self.provider, "model_version", "unknown"),
+                type(error).__name__,
+            )
             reasons = ["model_provider_failure"]
             if retrieval_error:
                 reasons = ["policy_retrieval_failure"]
